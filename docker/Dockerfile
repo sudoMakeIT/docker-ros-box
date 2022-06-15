@@ -1,29 +1,30 @@
 ARG ros_distro
-
+ARG uid
+ARG gid
 FROM osrf/ros:${ros_distro}-desktop-full
 
 ARG ros_distro
+ARG uid
+ARG gid
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get -yq --force-yes install \
 	sudo \
 	python3-catkin-tools \
+	nano \
 	dialog \
 	less \
-	nano \
 	x-window-system \
 	mesa-utils
 
-
-#https://stackoverflow.com/questions/27701930/how-to-add-users-to-docker-container
-RUN useradd -rm -d /home/${ros_distro}-dev -s /bin/bash -g root -G sudo -u 1001 -p "$(openssl passwd -6 root)" ${ros_distro}-dev
+RUN mkdir -p /home/${ros_distro}-dev/catkin_ws/src && \
+	echo "${ros_distro}-dev:x:${uid}:${gid}:Developer,,,:/home/${ros_distro}-dev:/bin/bash" >> /etc/passwd && \
+	echo "${ros_distro}-dev:x:${gid}:" >> /etc/group && \
+	echo "${ros_distro}-dev ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${ros_distro}-dev && \
+	chmod 0440 /etc/sudoers.d/${ros_distro}-dev && \
+	chown ${uid}:${gid} -R /home/${ros_distro}-dev
 
 USER ${ros_distro}-dev
-
-RUN mkdir -p /home/${ros_distro}-dev/catkin_ws/src && \
-	mkdir -p /home/${ros_distro}-dev/data && \
-	mkdir -p /home/${ros_distro}-dev/tools 
-
 ENV HOME /home/${ros_distro}-dev
 COPY bashrc /home/${ros_distro}-dev/.bashrc
 COPY bashrc /root/.bashrc

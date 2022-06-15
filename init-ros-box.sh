@@ -27,6 +27,8 @@ fi
 ros_distro="$1"
 target="$2"
 image_tag="docker-ros-box-${ros_distro}"
+uid=`id -u`
+gid=`id -g`
 user_name="${ros_distro}-dev"
 
 # Make sure the target exists
@@ -45,17 +47,31 @@ then
 	mkdir "${target}/src"
 fi
 
+if [ ! -d "${target}/data" ]
+then
+	mkdir "${target}/data"
+fi
+
+if [ ! -d "${target}/tools" ]
+then
+	mkdir "${target}/tools"
+fi
+
 # Build the docker image
 echo "Build the docker image... (This can take some time)"
 cd "${script_dir}/docker"
 if [ "$sudo" = "n" ]; then
     docker build \
 	    --build-arg ros_distro="${ros_distro}" \
+        --build-arg uid="${uid}" \
+        --build-arg gid="${gid}" \
     	-t ${image_tag} \
     	.
 else
     sudo docker build \
 	    --build-arg ros_distro="${ros_distro}" \
+        --build-arg uid="${uid}" \
+        --build-arg gid="${gid}" \
     	-t ${image_tag} \
     	.
 fi
