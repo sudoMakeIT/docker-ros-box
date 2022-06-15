@@ -27,8 +27,6 @@ fi
 ros_distro="$1"
 target="$2"
 image_tag="docker-ros-box-${ros_distro}"
-uid=`id -u`
-gid=`id -g`
 user_name="${ros_distro}-dev"
 
 # Make sure the target exists
@@ -52,18 +50,12 @@ echo "Build the docker image... (This can take some time)"
 cd "${script_dir}/docker"
 if [ "$sudo" = "n" ]; then
     docker build \
-        --quiet \
 	    --build-arg ros_distro="${ros_distro}" \
-        --build-arg uid="${uid}" \
-        --build-arg gid="${gid}" \
     	-t ${image_tag} \
     	.
 else
     sudo docker build \
-        --quiet \
 	    --build-arg ros_distro="${ros_distro}" \
-        --build-arg uid="${uid}" \
-        --build-arg gid="${gid}" \
     	-t ${image_tag} \
     	.
 fi
@@ -85,6 +77,8 @@ if [ "$sudo" = "n" ]; then
             --env="XAUTHORITY=${XAUTH}" \
             --device=/dev/dri/card0:/dev/dri/card0 \
             -v "${target}/src:/home/${ros_distro}-dev/catkin_ws/src" \
+            -v "${target}/data:/home/${ros_distro}-dev/data" \
+            -v "${target}/tools:/home/${ros_distro}-dev/tools" \
             --name "${container_name}" \
             -it ${image_tag}
 
@@ -97,11 +91,14 @@ else
             --env="XAUTHORITY=${XAUTH}" \
             --device=/dev/dri/card0:/dev/dri/card0 \
             -v "${target}/src:/home/${ros_distro}-dev/catkin_ws/src" \
+            -v "${target}/tools:/home/${ros_distro}-dev/tools" \
+            -v "${target}/data:/home/${ros_distro}-dev/data" \
             --name "${container_name}" \
             -it ${image_tag}
 
     sudo docker ps -aqf "name=${container_name}" > "${target}/docker_id"
 fi
+
 chmod 444 "${target}/docker_id"
 
 # That's it!

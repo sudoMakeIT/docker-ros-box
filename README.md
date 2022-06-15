@@ -21,7 +21,7 @@ git clone https://github.com/pierrekilly/docker-ros-box.git
 
 2. Initialize your ROS box:
 ```
-./docker-ros-box/init-ros-box.sh [ros_distro] [target]
+sudo ./docker-ros-box/init-ros-box.sh [ros_distro] [target]
     ros_distro        The ROS distribution to work with (lunar, kinetic, etc.)
     target            The target directory to deploy the basic setup
 ```

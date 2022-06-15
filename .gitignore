@@ -21,6 +21,9 @@ msg/_*.py
 *.dox
 *.wikidoc
 
+rosbox/
+.vscode/
+
 # eclipse stuff
 .project
 .cproject
