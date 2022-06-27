@@ -11,6 +11,7 @@ RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get -yq --force-yes install \
 	sudo \
 	python3-catkin-tools \
+	python3-pip \
 	nano \
 	dialog \
 	less \
